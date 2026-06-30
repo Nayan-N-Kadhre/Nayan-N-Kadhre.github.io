@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nayan Kadhre — Data Science</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAFAFA;
+    --surface:#FFFFFF;
+    --ink:#111113;
+    --ink-soft:#6B6D74;
+    --ink-faint:#A4A6AC;
+    --line:#E7E7EA;
+    --accent:#5B6CFF;
+    --accent-soft:rgba(91,108,255,0.08);
+    --accent-line:rgba(91,108,255,0.35);
+    --r-card: 14px;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  body.fine-pointer{cursor:none;}
+
+  ::selection{background:var(--accent); color:#fff;}
+
+  h1,h2,h3{font-family:'Space Grotesk', sans-serif; letter-spacing:-0.02em;}
+
+  .mono{font-family:'JetBrains Mono', monospace;}
+
+  a{color:inherit; text-decoration:none;}
+
+  .wrap{max-width:1180px; margin:0 auto; padding:0 32px;}
+
+  /* ---------- progress bar ---------- */
+  #progress{
+    position:fixed; top:0; left:0; height:2px; width:0%;
+    background:var(--accent); z-index:999; transition:width 0.08s linear;
+  }
+
+  /* ---------- custom cursor ---------- */
+  #cursor-dot, #cursor-ring{
+    position:fixed; top:0; left:0; pointer-events:none; z-index:998;
+    transform:translate(-50%,-50%); border-radius:50%;
+  }
+  #cursor-dot{width:5px; height:5px; background:var(--accent);}
+  #cursor-ring{
+    width:30px; height:30px; border:1px solid var(--ink-faint);
+    transition:width .2s, height .2s, border-color .2s, opacity .2s;
+  }
+  #cursor-ring.hover{width:54px; height:54px; border-color:var(--accent);}
+
+  /* ---------- nav ---------- */
+  nav{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:26px 32px; mix-blend-mode:normal;
+  }
+  .logo{font-family:'Space Grotesk'; font-weight:600; font-size:18px; letter-spacing:-0.02em;}
+  .logo span{color:var(--accent);}
+  .nav-links{display:flex; gap:36px; align-items:center;}
+  .nav-links a{font-size:14px; color:var(--ink-soft); transition:color .25s; position:relative;}
+  .nav-links a:hover{color:var(--ink);}
+  .nav-resume{
+    display:inline-flex; align-items:center; gap:7px;
+    border:1px solid var(--ink); color:var(--ink);
+    padding:8px 16px; border-radius:30px; font-size:13px; font-weight:500;
+    transition:all .3s cubic-bezier(.2,.8,.2,1);
+  }
+  .nav-resume:hover{background:var(--ink); color:#fff; transform:translateY(-1px);}
+  .nav-resume .arrow{transition:transform .25s;}
+  .nav-resume:hover .arrow{transform:translate(2px,-2px);}
+    display:flex; align-items:center; gap:8px;
+    border:1px solid var(--line); background:var(--surface);
+    padding:7px 14px; border-radius:30px; font-size:12px; color:var(--ink-soft);
+  }
+  .status-dot{
+    width:6px; height:6px; border-radius:50%; background:var(--accent);
+    animation:pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{box-shadow:0 0 0 0 rgba(91,108,255,0.45);}
+    50%{box-shadow:0 0 0 5px rgba(91,108,255,0);}
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative; min-height:100vh; display:flex; align-items:center;
+    padding-top:90px;
+  }
+  #hero-canvas{
+    position:absolute; top:0; right:-8%; width:54%; height:100%;
+    pointer-events:none; opacity:0.42; z-index:1;
+  }
+  .hero-inner{position:relative; z-index:2; max-width:620px;}
+  .eyebrow{
+    font-size:12.5px; color:var(--ink-soft); letter-spacing:0.12em;
+    text-transform:uppercase; display:flex; align-items:center; gap:10px;
+    margin-bottom:22px;
+  }
+  .eyebrow::before{content:""; width:24px; height:1px; background:var(--accent);}
+  .hero h1{
+    font-size:clamp(40px, 5.6vw, 68px); line-height:1.04; font-weight:600;
+    margin-bottom:24px;
+  }
+  .hero h1 em{font-style:normal; color:var(--accent);}
+  .hero p{
+    font-size:17px; line-height:1.65; color:var(--ink-soft); max-width:480px;
+    margin-bottom:38px;
+  }
+  .btn-row{display:flex; gap:14px; align-items:center;}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:14px 26px; border-radius:8px; font-size:14px; font-weight:500;
+    transition:all .3s cubic-bezier(.2,.8,.2,1);
+  }
+  .btn-primary{background:var(--ink); color:#fff;}
+  .btn-primary:hover{background:var(--accent); transform:translateY(-2px);}
+  .btn-ghost{border:1px solid var(--line); color:var(--ink);}
+  .btn-ghost:hover{border-color:var(--ink); transform:translateY(-2px);}
+
+  .scroll-cue{
+    position:absolute; bottom:40px; left:32px; display:flex; align-items:center; gap:10px;
+    font-size:11px; color:var(--ink-faint); letter-spacing:0.1em;
+  }
+  .scroll-cue .line{width:1px; height:34px; background:var(--line); position:relative; overflow:hidden;}
+  .scroll-cue .line::after{
+    content:""; position:absolute; top:-100%; left:0; width:100%; height:100%;
+    background:var(--accent); animation:scrollline 2.2s ease-in-out infinite;
+  }
+  @keyframes scrollline{ 0%{top:-100%;} 50%{top:0;} 100%{top:100%;} }
+
+  /* ---------- reveal ---------- */
+  .reveal{opacity:0; transform:translateY(28px); transition:opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1);}
+  .reveal.in-view{opacity:1; transform:translateY(0);}
+
+  section{padding:140px 0;}
+  .section-head{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:56px; gap:24px; flex-wrap:wrap;}
+  .section-num{font-size:12px; color:var(--accent);}
+  .section-head h2{font-size:clamp(28px,3.4vw,38px); font-weight:600;}
+  .section-head .sub{color:var(--ink-soft); font-size:14.5px; max-width:320px; text-align:right;}
+
+  /* ---------- about ---------- */
+  .about-grid{display:grid; grid-template-columns:1.1fr 0.9fr; gap:64px; align-items:start;}
+  .about-grid p{font-size:17px; line-height:1.75; color:var(--ink-soft); margin-bottom:18px;}
+  .about-grid p strong{color:var(--ink); font-weight:500;}
+  .stat-list{border-top:1px solid var(--line);}
+  .stat-row{
+    display:flex; justify-content:space-between; padding:18px 0;
+    border-bottom:1px solid var(--line); font-size:14px;
+  }
+  .stat-row .k{color:var(--ink-soft);}
+  .stat-row .v{font-family:'JetBrains Mono'; font-size:13px;}
+
+  /* ---------- projects ---------- */
+  .project-grid{display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--r-card);
+    padding:32px; position:relative; overflow:hidden;
+    transition:border-color .3s, box-shadow .3s;
+    transform-style:preserve-3d; will-change:transform;
+  }
+  .card:hover{border-color:var(--accent-line); box-shadow:0 24px 48px -24px rgba(17,17,19,0.18);}
+  .card-tag{
+    font-family:'JetBrains Mono'; font-size:11px; color:var(--accent);
+    text-transform:uppercase; letter-spacing:0.06em; margin-bottom:18px; display:block;
+  }
+  .card h3{font-size:21px; font-weight:600; margin-bottom:12px;}
+  .card p{font-size:14.5px; line-height:1.65; color:var(--ink-soft); margin-bottom:20px;}
+  .stack{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px;}
+  .stack span{
+    font-family:'JetBrains Mono'; font-size:11px; color:var(--ink-soft);
+    border:1px solid var(--line); padding:4px 9px; border-radius:5px;
+  }
+  .card-link{font-size:13px; color:var(--ink); display:inline-flex; align-items:center; gap:6px; font-weight:500;}
+  .card-link .arrow{transition:transform .25s;}
+  .card-link:hover .arrow{transform:translate(3px,-3px);}
+
+  /* ---------- skills panel ---------- */
+  .skill-panel{
+    display:grid; grid-template-columns:repeat(4,1fr);
+    gap:1px; background:var(--line);
+    border:1px solid var(--line); border-radius:18px;
+    overflow:hidden; margin-top:8px;
+  }
+  .skill-col{background:var(--surface); padding:34px 30px; transition:background .3s;}
+  .skill-col:hover{background:#FCFCFD;}
+  .skill-col-head{
+    display:flex; align-items:baseline; gap:10px;
+    margin-bottom:24px; padding-bottom:18px; border-bottom:1px solid var(--line);
+  }
+  .skill-col-head .index{color:var(--accent); font-size:11px;}
+  .skill-col-head h4{font-size:15px; font-weight:600;}
+  .skill-col ul{list-style:none;}
+  .skill-col li{
+    display:flex; align-items:center; gap:10px;
+    font-size:14.5px; color:var(--ink-soft);
+    padding:10px 0; border-bottom:1px dashed var(--line);
+    transition:color .25s, padding-left .25s;
+  }
+  .skill-col li:last-child{border-bottom:none;}
+  .skill-col li::before{
+    content:""; width:5px; height:5px; border-radius:50%;
+    background:var(--accent); opacity:0.55; flex-shrink:0;
+  }
+  .skill-col li:hover{color:var(--ink); padding-left:4px;}
+
+  @media (max-width:880px){
+    .skill-panel{grid-template-columns:1fr;}
+  }
+
+  /* ---------- journey ---------- */
+  .journey-list{position:relative;}
+  .journey-item{display:grid; grid-template-columns:24px 1fr; gap:28px; padding-bottom:52px;}
+  .journey-item:last-child{padding-bottom:0;}
+  .journey-marker-col{position:relative; display:flex; justify-content:center;}
+  .journey-marker-col::before{
+    content:""; position:absolute; top:4px; bottom:-52px; left:50%;
+    width:1px; background:var(--line); transform:translateX(-50%);
+  }
+  .journey-item:last-child .journey-marker-col::before{display:none;}
+  .journey-dot{
+    width:11px; height:11px; border-radius:50%;
+    border:2px solid var(--accent); background:var(--bg);
+    margin-top:5px; position:relative; z-index:1;
+  }
+  .journey-eyebrow{
+    font-size:11px; color:var(--ink-faint); letter-spacing:0.1em;
+    text-transform:uppercase; margin-bottom:10px;
+    display:flex; align-items:center; flex-wrap:wrap; gap:10px;
+  }
+  .journey-now-badge{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:10px; color:var(--accent); letter-spacing:0.05em;
+    background:var(--accent-soft); border:1px solid var(--accent-line);
+    padding:3px 10px; border-radius:20px;
+  }
+  .journey-now-badge .dot{
+    width:5px; height:5px; border-radius:50%; background:var(--accent);
+    animation:pulse 2s ease-in-out infinite;
+  }
+  .journey-item.current .journey-dot{
+    background:var(--accent); border-color:var(--accent);
+    animation:pulse 2s ease-in-out infinite;
+  }
+  .journey-item.current .journey-content{
+    background:var(--accent-soft); border:1px solid var(--accent-line);
+    border-radius:14px; padding:24px 28px;
+  }
+  .journey-content h3{
+    font-size:clamp(19px,2.2vw,23px); font-weight:600; font-style:italic;
+    margin-bottom:11px;
+  }
+  .journey-content p{font-size:15px; line-height:1.7; color:var(--ink-soft); max-width:580px;}
+
+  /* ---------- experience ---------- */
+  .exp-list{border-top:1px solid var(--line);}
+  .exp-item{display:grid; grid-template-columns:260px 1fr; gap:48px; padding:40px 0; border-bottom:1px solid var(--line);}
+  .exp-role{font-size:19px; font-weight:600; margin-bottom:8px;}
+  .exp-org{font-size:14px; color:var(--ink-soft); margin-bottom:6px;}
+  .exp-dates{font-family:'JetBrains Mono'; font-size:11px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:0.05em;}
+  .exp-bullets{list-style:none;}
+  .exp-bullets li{position:relative; padding-left:20px; font-size:14.5px; line-height:1.7; color:var(--ink-soft); margin-bottom:13px;}
+  .exp-bullets li:last-child{margin-bottom:0;}
+  .exp-bullets li::before{content:"—"; position:absolute; left:0; color:var(--accent);}
+
+  @media (max-width:880px){
+    .exp-item{grid-template-columns:1fr; gap:16px;}
+    .journey-item{grid-template-columns:18px 1fr; gap:18px;}
+  }
+
+  /* ---------- contact ---------- */
+  .contact-box{
+    border:1px solid var(--line); border-radius:20px; padding:72px 56px;
+    text-align:center; position:relative; overflow:hidden; background:var(--surface);
+  }
+  .contact-box h2{font-size:clamp(30px,4.4vw,52px); font-weight:600; margin-bottom:20px;}
+  .contact-box p{color:var(--ink-soft); font-size:16px; margin-bottom:36px;}
+  .contact-links{display:flex; gap:16px; justify-content:center; flex-wrap:wrap;}
+
+  footer{padding:36px 0; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); font-size:12.5px; color:var(--ink-faint);}
+
+  @media (max-width:880px){
+    #hero-canvas{width:100%; right:-10%; opacity:0.5;}
+    .about-grid{grid-template-columns:1fr;}
+    .project-grid{grid-template-columns:1fr;}
+    .skill-panel{grid-template-columns:1fr;}
+    .nav-links{display:none;}
+    .section-head{flex-direction:column;}
+    .section-head .sub{text-align:left;}
+    .contact-box{padding:48px 24px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div id="cursor-ring"></div>
+<div id="cursor-dot"></div>
+
+<nav>
+  <div class="logo">N<span>K</span>.</div>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#experience">Experience</a>
+    <a href="#work">Work</a>
+    <a href="#skills">Skills</a>
+    <a href="#contact">Contact</a>
+    <a class="nav-resume" href="https://drive.google.com/file/d/REPLACE_WITH_YOUR_FILE_ID/view" target="_blank" rel="noopener">Resume <span class="arrow">↗</span></a>
+    <div class="status-pill"><span class="status-dot"></span>Open to Fall 2026 internships</div>
+  </div>
+</nav>
+
+<section class="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="wrap">
+    <div class="hero-inner">
+      <div class="eyebrow">MS Data Science — University of Arizona, 2027</div>
+      <h1>Data systems for the machines that <em>explore</em>.</h1>
+      <p>I'm Nayan Kadhre — a data scientist working at the intersection of pipelines, machine learning, and the kind of hardware that leaves the planet. Currently building toward roles in space and robotics data science.</p>
+      <div class="btn-row">
+        <a href="#work" class="btn btn-primary">View the work</a>
+        <a href="#contact" class="btn btn-ghost">Get in touch</a>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-cue"><div class="line"></div>SCROLL</div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-num mono">// About</div>
+        <h2>Engineering background,<br>data science focus.</h2>
+      </div>
+      <div class="sub">Computer engineering roots, now applied to forecasting, planetary data, and production pipelines.</div>
+    </div>
+    <div class="about-grid">
+      <div class="reveal">
+        <p>I started in <strong>Computer Engineering</strong> at the University of Pune, then moved into applied data science to work on problems with physical consequences — energy infrastructure, atmospheric data, autonomous systems.</p>
+        <p>That shift now shapes everything I build: production-style pipelines with proper architecture, not notebooks left unfinished. Docker, Airflow, and Postgres sit underneath the modeling, because the engineering is what makes the science usable.</p>
+        <p>Outside of coursework, I'm <strong>Secretary of the UA Ballroom Club</strong> and a peer tutor at the SALT Center — both of which keep me explaining technical ideas in plain language, which turns out to be most of the job.</p>
+      </div>
+      <div class="reveal">
+        <div class="stat-list">
+          <div class="stat-row"><span class="k">Program</span><span class="v">MS Data Science, UA</span></div>
+          <div class="stat-row"><span class="k">GPA</span><span class="v">3.8</span></div>
+          <div class="stat-row"><span class="k">Prior degree</span><span class="v">B.E. Computer Engineering</span></div>
+          <div class="stat-row"><span class="k">Publication</span><span class="v">CNN-LSTM, Springer 2024</span></div>
+          <div class="stat-row"><span class="k">Targeting</span><span class="v">Space · Robotics · FAANG</span></div>
+          <div class="stat-row"><span class="k">Geography</span><span class="v">USA · Europe · Japan</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="journey">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-num mono">// Journey</div>
+        <h2>From hardware<br>to the data behind it.</h2>
+      </div>
+      <div class="sub">Computer engineering roots, applied analytics experience, then a return to formal ML training.</div>
+    </div>
+
+    <div class="journey-list">
+      <div class="journey-item reveal">
+        <div class="journey-marker-col"><div class="journey-dot"></div></div>
+        <div class="journey-content">
+          <div class="journey-eyebrow mono">Earlier</div>
+          <h3>B.E. Computer Engineering, University of Pune</h3>
+          <p>Built the hardware-and-systems intuition that still shapes how I approach ML pipelines today — thinking in tolerances, failure modes, and signal integrity.</p>
+        </div>
+      </div>
+
+      <div class="journey-item reveal">
+        <div class="journey-marker-col"><div class="journey-dot"></div></div>
+        <div class="journey-content">
+          <div class="journey-eyebrow mono">~1.5 years</div>
+          <h3>Data Analyst</h3>
+          <p>About a year and a half in applied analytics — building dashboards, running SQL and Python analyses across ad-tech platforms, and learning to turn raw data into decisions stakeholders could act on. That hands-on grounding is what pulled me toward formal data science training.</p>
+        </div>
+      </div>
+
+      <div class="journey-item current reveal">
+        <div class="journey-marker-col"><div class="journey-dot"></div></div>
+        <div class="journey-content">
+          <div class="journey-eyebrow mono">Year 1 complete<span class="journey-now-badge"><span class="dot"></span>Now</span></div>
+          <h3>M.S. Data Science, University of Arizona</h3>
+          <p>Deepening into ML, large-scale data infrastructure, and planetary science research, while building a portfolio that spans embedded systems to big data pipelines — on track for <strong style="color:var(--accent);">graduation in May 2027</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-num mono">// Experience</div>
+        <h2>Roles that shaped<br>how I work.</h2>
+      </div>
+      <div class="sub">Research, ad-tech analytics, and the internship that started it all.</div>
+    </div>
+
+    <div class="exp-list">
+      <div class="exp-item reveal">
+        <div>
+          <div class="exp-role">Student Researcher</div>
+          <div class="exp-org">Department of Planetary Sciences, University of Arizona</div>
+          <div class="exp-dates">May 2026 — Present</div>
+        </div>
+        <ul class="exp-bullets">
+          <li>Built an ETL pipeline with Astropy, Pandas, and NumPy to parse FITS-format data into analysis-ready DataFrames across 861 Martian vertical aerosol profiles spanning 33 atmospheric campaigns.</li>
+          <li>Applied K-Means and Agglomerative clustering with multi-metric validation (Silhouette 0.7975) to surface a statistically dominant 840-profile cluster that manual inspection couldn't distinguish.</li>
+          <li>Delivered a reproducible Jupyter Notebook framework directly supporting a PhD-level publication on Martian aerosol representations in exoplanet atmospheric inference models.</li>
+        </ul>
+      </div>
+
+      <div class="exp-item reveal">
+        <div>
+          <div class="exp-role">Data Analyst</div>
+          <div class="exp-org">Adelement Media Solutions</div>
+          <div class="exp-dates">March 2024 — June 2025</div>
+        </div>
+        <ul class="exp-bullets">
+          <li>Engineered Metabase dashboards tracking ad inventory KPIs across 6 publishers on PubMatic, Magnite, and InMobi, lifting fill rates from 15% to 23% and driving revenue 10–15% above target.</li>
+          <li>Ran SQL and Python analyses across 3 DSP platforms, surfacing discrepancies that expanded annual revenue by roughly $540K–$820K.</li>
+          <li>Automated 3 recurring reporting workflows, saving 15–25 minutes per report for 22 cross-functional stakeholders.</li>
+        </ul>
+      </div>
+
+      <div class="exp-item reveal">
+        <div>
+          <div class="exp-role">Data Analytics Intern</div>
+          <div class="exp-org">Cloud Counselage Pvt Ltd</div>
+          <div class="exp-dates">July 2023 — September 2023</div>
+        </div>
+        <ul class="exp-bullets">
+          <li>Ran end-to-end EDA on 4,800+ student feedback records, uncovering a 49.6% salary expectation gap between novice and experienced students.</li>
+          <li>Delivered a full documentation suite — project charter, execution plan, final report — for repeatable, data-driven program evaluation.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="work">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-num mono">// Selected work</div>
+        <h2>Six problems,<br>end to end.</h2>
+      </div>
+      <div class="sub">From embedded telemetry to production pipelines — built and shipped, not just modeled.</div>
+    </div>
+    <div class="project-grid">
+
+      <div class="card reveal" data-tilt>
+        <span class="card-tag">Embedded Systems · Aerospace</span>
+        <h3>DIY CubeSat Attitude Control System</h3>
+        <p>A full-stack telemetry system spanning an MPU-6050 gyroscope, Python ETL, a Postgres warehouse, and a React dashboard on AWS — validating real-time pitch, roll, and yaw streaming while building a C/C++ PID loop to autonomously orient a reaction-wheel CubeSat.</p>
+        <div class="stack"><span>MPU-6050</span><span>Python</span><span>PostgreSQL</span><span>React</span><span>C/C++</span></div>
+        <span class="card-link" style="color:var(--ink-faint); cursor:default;">In progress</span>
+      </div>
+
+      <div class="card reveal" data-tilt>
+        <span class="card-tag">Big Data · Classification</span>
+        <h3>Big Data Flight Delay Prediction</h3>
+        <p>A distributed PySpark pipeline over 6.7M U.S. flight records exposing how data leakage inflates published delay-prediction results — AUC-ROC collapsed from 0.999 to a true 0.665 after removing leakage columns, then recovered 58% accuracy via a two-stage hybrid architecture.</p>
+        <div class="stack"><span>PySpark</span><span>Databricks</span><span>LightGBM</span><span>Optuna</span></div>
+        <a class="card-link" href="https://github.com/Nayan-N-Kadhre/Big-Data-Flight-Delay-Prediction" target="_blank" rel="noopener">View repository <span class="arrow">↗</span></a>
+      </div>
+
+      <div class="card reveal" data-tilt>
+        <span class="card-tag">Deep Learning · Publication</span>
+        <h3>Hybrid CNN-LSTM Digit Recognition</h3>
+        <p>A hybrid CNN-LSTM architecture for Hindi handwritten digit recognition reaching 99.98% validation accuracy across 17,000 images, outperforming standalone CNN and LSTM baselines — published in Springer's ISBM 2023 proceedings.</p>
+        <div class="stack"><span>TensorFlow</span><span>Keras</span><span>CNN-LSTM</span></div>
+        <a class="card-link" href="https://github.com/NayankumarKadhre/Hindi-Digit-Recognizer-App" target="_blank" rel="noopener">View repository <span class="arrow">↗</span></a>
+      </div>
+
+      <div class="card reveal" data-tilt>
+        <span class="card-tag">SQL · Tableau</span>
+        <h3>Global Stock Market Analysis Dashboard</h3>
+        <p>A pure-SQL pipeline merging 16 years of daily trading data across 9 global indices, computing technical indicators with window functions and surfacing a 38% volatility gap between North American and Asia-Europe markets in an interactive dashboard.</p>
+        <div class="stack"><span>MySQL</span><span>Window Functions</span><span>Tableau</span></div>
+        <a class="card-link" href="https://github.com/NayankumarKadhre/Global-Stock-Market-Analysis-Dashboard" target="_blank" rel="noopener">View repository <span class="arrow">↗</span></a>
+      </div>
+
+      <div class="card reveal" data-tilt>
+        <span class="card-tag">ML · Regression</span>
+        <h3>Real Estate Affordability Analysis</h3>
+        <p>A 1.3M-record affordability model combining housing and cost-of-living data — Random Forest classified affordability at 0.961 AUC-ROC, while an XGBoost regressor predicted required income, surfacing widespread negative available income before housing costs.</p>
+        <div class="stack"><span>Python</span><span>XGBoost</span><span>scikit-learn</span></div>
+        <a class="card-link" href="https://github.com/Nayan-N-Kadhre/INFO-523-Final-Project" target="_blank" rel="noopener">View repository <span class="arrow">↗</span></a>
+      </div>
+
+      <div class="card reveal" data-tilt>
+        <span class="card-tag">Data Engineering · Forecasting</span>
+        <h3>EV Charging Infrastructure Pipeline</h3>
+        <p>A production-grade Airflow-orchestrated pipeline ingesting 19,432 EV stations into a 3-layer Postgres warehouse, with Prophet forecasts beating rolling-average baselines by 18% and an 8-chart Tableau dashboard tracking three decades of network growth.</p>
+        <div class="stack"><span>Airflow</span><span>PostgreSQL</span><span>Prophet</span><span>Tableau</span><span>Docker</span></div>
+        <a class="card-link" href="https://github.com/Nayan-N-Kadhre/EV-Demand-Forecasting" target="_blank" rel="noopener">View repository <span class="arrow">↗</span></a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-num mono">// Toolkit</div>
+        <h2>What I build with.</h2>
+      </div>
+      <div class="sub">Languages, modeling, and the infrastructure that holds it together.</div>
+    </div>
+
+    <div class="skill-panel">
+      <div class="skill-col reveal">
+        <div class="skill-col-head"><span class="index mono">01</span><h4>Languages &amp; Tools</h4></div>
+        <ul>
+          <li>Python</li>
+          <li>SQL</li>
+          <li>Git</li>
+          <li>REST APIs</li>
+        </ul>
+      </div>
+
+      <div class="skill-col reveal">
+        <div class="skill-col-head"><span class="index mono">02</span><h4>Data Engineering</h4></div>
+        <ul>
+          <li>Apache Airflow</li>
+          <li>PySpark</li>
+          <li>PostgreSQL</li>
+          <li>Docker</li>
+          <li>Databricks</li>
+          <li>ELT Pipelines</li>
+        </ul>
+      </div>
+
+      <div class="skill-col reveal">
+        <div class="skill-col-head"><span class="index mono">03</span><h4>Modeling &amp; ML</h4></div>
+        <ul>
+          <li>scikit-learn</li>
+          <li>XGBoost</li>
+          <li>Facebook Prophet</li>
+          <li>Feature Engineering</li>
+          <li>Time-Series Forecasting</li>
+        </ul>
+      </div>
+
+      <div class="skill-col reveal">
+        <div class="skill-col-head"><span class="index mono">04</span><h4>Analysis &amp; Applied AI</h4></div>
+        <ul>
+          <li>Tableau</li>
+          <li>Metabase</li>
+          <li>Matplotlib</li>
+          <li>Exploratory Data Analysis</li>
+          <li>Generative AI / Prompt Engineering</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="contact-box reveal">
+      <div class="eyebrow" style="justify-content:center;">Let's talk</div>
+      <h2>Looking for a data scientist<br>who ships, not just models.</h2>
+      <p>Open to internship and full-time conversations in data science, analytics, and ML engineering.</p>
+      <div class="contact-links">
+        <a class="btn btn-primary" href="mailto:nayan.kadhre@example.com">Email me</a>
+        <a class="btn btn-ghost" href="https://github.com/Nayan-N-Kadhre" target="_blank" rel="noopener">GitHub</a>
+        <a class="btn btn-ghost" href="#" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap" style="display:flex; justify-content:space-between; width:100%;">
+    <span>© 2026 Nayan Kadhre</span>
+    <span class="mono">Tucson, AZ</span>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ---------------- progress bar ---------------- */
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progress').style.width = pct + '%';
+});
+
+/* ---------------- custom cursor ---------------- */
+const isFine = window.matchMedia('(pointer: fine)').matches;
+if(isFine){
+  document.body.classList.add('fine-pointer');
+  const dot = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  let mx=0,my=0, rx=0, ry=0;
+  window.addEventListener('mousemove', e=>{
+    mx=e.clientX; my=e.clientY;
+    dot.style.left = mx+'px'; dot.style.top = my+'px';
+  });
+  function animRing(){
+    rx += (mx-rx)*0.18; ry += (my-ry)*0.18;
+    ring.style.left = rx+'px'; ring.style.top = ry+'px';
+    requestAnimationFrame(animRing);
+  }
+  animRing();
+  document.querySelectorAll('a, button, .card, [data-tilt]').forEach(el=>{
+    el.addEventListener('mouseenter', ()=>ring.classList.add('hover'));
+    el.addEventListener('mouseleave', ()=>ring.classList.remove('hover'));
+  });
+}else{
+  document.getElementById('cursor-dot').style.display='none';
+  document.getElementById('cursor-ring').style.display='none';
+}
+
+/* ---------------- scroll reveal ---------------- */
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in-view'); io.unobserve(e.target); } });
+}, {threshold:0.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* ---------------- card tilt ---------------- */
+document.querySelectorAll('[data-tilt]').forEach(card=>{
+  card.addEventListener('mousemove', e=>{
+    const r = card.getBoundingClientRect();
+    const px = (e.clientX - r.left)/r.width - 0.5;
+    const py = (e.clientY - r.top)/r.height - 0.5;
+    card.style.transform = `perspective(800px) rotateY(${px*6}deg) rotateX(${-py*6}deg) translateZ(0)`;
+  });
+  card.addEventListener('mouseleave', ()=>{
+    card.style.transition = 'transform .5s cubic-bezier(.2,.8,.2,1)';
+    card.style.transform = 'perspective(800px) rotateY(0deg) rotateX(0deg)';
+    setTimeout(()=>card.style.transition='', 500);
+  });
+  card.addEventListener('mouseenter', ()=>{ card.style.transition=''; });
+});
+
+/* ---------------- three.js hero bot ---------------- */
+(function(){
+  const canvas = document.getElementById('hero-canvas');
+  if(!canvas || !window.THREE) return;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+  camera.position.set(0,0,9);
+
+  const group = new THREE.Group();
+  scene.add(group);
+
+  // wireframe core — kept faint, this is ambient texture, not a focal object
+  const coreGeo = new THREE.IcosahedronGeometry(2.1, 1);
+  const coreMat = new THREE.MeshBasicMaterial({color:0x111113, wireframe:true, transparent:true, opacity:0.07});
+  const core = new THREE.Mesh(coreGeo, coreMat);
+  group.add(core);
+
+  // accent nodes at vertices, small and dim
+  const posAttr = coreGeo.attributes.position;
+  const nodeGeo = new THREE.SphereGeometry(0.03, 8, 8);
+  const nodeMat = new THREE.MeshBasicMaterial({color:0x5B6CFF, transparent:true, opacity:0.45});
+  const nodes = [];
+  const seen = new Set();
+  for(let i=0;i<posAttr.count;i++){
+    const key = `${posAttr.getX(i).toFixed(2)}_${posAttr.getY(i).toFixed(2)}_${posAttr.getZ(i).toFixed(2)}`;
+    if(seen.has(key)) continue;
+    seen.add(key);
+    const node = new THREE.Mesh(nodeGeo, nodeMat);
+    node.position.set(posAttr.getX(i), posAttr.getY(i), posAttr.getZ(i));
+    node.userData.phase = Math.random()*Math.PI*2;
+    group.add(node);
+    nodes.push(node);
+  }
+
+  // single faint orbiting ring — quiet ambient motion, not a HUD
+  const ringGeo = new THREE.TorusGeometry(2.85, 0.004, 8, 100);
+  const ringMat = new THREE.MeshBasicMaterial({color:0x5B6CFF, transparent:true, opacity:0.22});
+  const ring = new THREE.Mesh(ringGeo, ringMat);
+  ring.rotation.x = Math.PI/2.3;
+  scene.add(ring);
+
+  function resize(){
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w/h;
+    camera.updateProjectionMatrix();
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  let mouseX=0, mouseY=0;
+  window.addEventListener('mousemove', e=>{
+    mouseX = (e.clientX/window.innerWidth - 0.5);
+    mouseY = (e.clientY/window.innerHeight - 0.5);
+  });
+
+  const clock = new THREE.Clock();
+  function tick(){
+    const t = clock.getElapsedTime();
+    if(!reduceMotion){
+      group.rotation.y = t*0.045 + mouseX*0.25;
+      group.rotation.x = Math.sin(t*0.08)*0.05 + mouseY*0.15;
+      ring.rotation.z = t*0.06;
+      nodes.forEach(n=>{
+        const s = 1 + Math.sin(t*0.9 + n.userData.phase)*0.35;
+        n.scale.setScalar(s);
+      });
+    }
+    renderer.render(scene, camera);
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+</script>
+
+</body>
+</html>
